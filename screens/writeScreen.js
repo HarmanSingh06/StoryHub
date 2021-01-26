@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ToastAndroid } from 'react-native';
 import { Header } from 'react-native-elements';
 import firebase from 'firebase';
 import db from '../config';
@@ -15,15 +15,32 @@ export default class ReadScreen extends React.Component {
         }
     }
     submitStory = async () => {
-        db.collection('stories').add({
-            "Title": this.state.title,
-            "Author": this.state.author,
-            "story": this.state.story
-        });
+        var title = this.state.title;
+        var author = this.state.author;
+        var story = this.state.story;
+
+        if (title === '') {
+            ToastAndroid.show("Title Required", ToastAndroid.SHORT)
+        }
+        else if (author === '') {
+            ToastAndroid.show("Author required", ToastAndroid.SHORT)
+        }
+        else if (story === '') {
+            ToastAndroid.show("Story required", ToastAndroid.SHORT)
+        }
+        else {
+            db.collection('stories').add({
+                "Title": this.state.title,
+                "Author": this.state.author,
+                "story": this.state.story
+            });
+
+            ToastAndroid.show("Your Story has been submitted", ToastAndroid.SHORT)
+        }
     }
     render() {
         return (
-            <View>
+            <KeyboardAvoidingView behavior="padding">
                 <Header
                     backgroundColor="black"
                     centerComponent={{
@@ -46,7 +63,7 @@ export default class ReadScreen extends React.Component {
                 <TouchableOpacity onPress={() => {
                     this.submitStory();
                 }}><Text style={styles.button}>Submit</Text></TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 }
